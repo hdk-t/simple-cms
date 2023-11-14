@@ -1,0 +1,2 @@
+# simple-password-manager
+Laravel10学習用のシンプルなパスワード管理アプリケーション
