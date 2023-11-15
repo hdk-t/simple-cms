@@ -1,8 +1,8 @@
 version: "3"
 
 networks:
-  laravel_review_site_network:
-    name: laravel_review_site_network
+  simple_cms_network:
+    name: simple_cms_network
     driver: bridge
     ipam:
       driver: default
@@ -15,6 +15,7 @@ volumes:
 
 services:
   app:
+    container_name: simple_cms_app
     tty: true
     restart: always
     image: thideki/alpine-laravel:10x
@@ -26,10 +27,11 @@ services:
       - vendor_library:/opt/html/vendor
     ports: ["8080:80"]
     networks:
-      laravel_review_site_network:
+      simple_cms_network:
         ipv4_address: 172.20.0.2
 
   db:
+    container_name: simple_cms_db
     tty: true
     restart: always
     build: ./mysql
@@ -43,5 +45,5 @@ services:
       - ./mysql/mysqldump:/opt/mysqldump
       - ./logs/mysql:/var/log/mysql
     networks:
-      laravel_review_site_network:
+      simple_cms_network:
         ipv4_address: 172.20.0.3
