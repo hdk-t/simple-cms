@@ -5,17 +5,19 @@ Laravel10x学習用のシンプルなCMS
 ## 機能一覧
 - ユーザー 
     - 記事一覧表示
-        - サムネイル画像表示
-        - タイトル表示
-        - タグ表示
+        - 新着順で表示
+        - リスト表示内容
+            - サムネイル画像表示
+            - タイトル表示
+            - タグ表示
     - 記事詳細表示
         - サムネイル画像表示
         - タイトル表示
         - タグ表示
         - 本文表示
             - MarkDown解析表示
-
 - 管理者
+    - ベーシック認証
     - ログイン
     - ログアウト
     - 管理記事一覧
@@ -55,18 +57,18 @@ graph LR
     subgraph admin [管理者]
         /admin-->ベーシック認証--"/admin/login"-->パスワード認証画面--"/admin/articles"-->管理記事一覧
         管理者ヘッダー--"/admin/articles"-->管理記事一覧
-        管理者ヘッダー--"/admin/images"-->管理画像一覧
+        管理者ヘッダー--"/admin/pictures"-->管理画像一覧
         管理者ヘッダー--ログアウト-->パスワード認証画面
         管理記事一覧--"/admin/articles/create"-->記事作成
-        記事作成--"/admin/articles/:id/images"-->サムネイル画像設定
+        記事作成--"/admin/articles/:id/pictures"-->サムネイル画像設定
         管理記事一覧--"/admin/articles/edit/:id"-->記事編集
-        記事編集--"/admin/articles/:id/images"-->サムネイル画像設定
+        記事編集--"/admin/articles/:id/pictures"-->サムネイル画像設定
         サムネイル画像設定-->管理記事一覧
         記事編集--"/admin/articles/delete/:id"-->記事削除確認
         記事削除確認-->管理記事一覧
-        管理画像一覧--"/admin/images/create"-->画像アップロード
+        管理画像一覧--"/admin/pictures/create"-->画像アップロード
         画像アップロード-->管理画像一覧
-        管理画像一覧--"/admin/images/delete/:id"-->画像削除確認
+        管理画像一覧--"/admin/pictures/delete/:id"-->画像削除確認
         画像削除確認-->管理画像一覧
     end
 ```
@@ -76,14 +78,14 @@ graph LR
 erDiagram
 
     articles }|--|| article_statuses: "article_statuses_id"
-    articles }|--|| images: "images_id"
+    articles }|--|| pictures: "pictures_id"
     article_tags }o--|| articles: "articles_id"
     article_tags }|--|| tags: "tags_id"
 
     articles {
         bigint id PK
         string title "記事タイトル"
-        string images_id "サムネイル画像ID"
+        string pictures_id "サムネイル画像ID"
         text body "記事本文"
         string article_statuses_id "記事ステータス"
         datetime created_at
@@ -113,10 +115,10 @@ erDiagram
         timestamp updated_at
     }
 
-    images {
+    pictures {
         bigint id PK
         string path "画像パス"
-        boolean is_deleted "削除フラグ"
+        boolean deleted_at
         datetime created_at
         timestamp updated_at
     }
@@ -129,7 +131,18 @@ erDiagram
 ## ライブラリインストール
     docker exec -it simple_cms_app composer install
 
-## データベースを作成して初期データを投入
-    docker exec -it simple_cms_app php artisan migrate --seed
+## データベースを作成
+    docker exec -it simple_cms_db mysql -uroot -ppass -e "create database simple_cms;"
+
+## テーブルを作成
+    docker exec -it simple_cms_app php artisan migrate
+
+## 開発用データ投入
+    docker exec -it simple_cms_app php artisan db:seed --class=DevSeeder
+
+## リンクを作成
+    docker exec -it simple_cms_app php artisan storage:link
+
+http://localhost:8080  
 
 # テスト実行手順
