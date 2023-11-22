@@ -20,7 +20,7 @@ class PictureFactory extends Factory
     public function definition(): array
     {
         return [
-            'path' => 'pictures/dev_image.jpg',
+            'path' => 'pictures/sample_image.jpg',
         ];
     }
 }

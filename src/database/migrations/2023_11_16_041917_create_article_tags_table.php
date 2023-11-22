@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('article_tags', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('articles_id')->unsigned()->comment('記事ID');
-            $table->string('tags_id')->comment('タグID');
+            $table->bigInteger('article_id')->unsigned()->comment('記事ID');
+            $table->bigInteger('tag_id')->unsigned()->comment('タグID');
             $table->timestamps();
         });
     }

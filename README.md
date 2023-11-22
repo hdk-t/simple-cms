@@ -1,5 +1,5 @@
 # simple-cms
-Laravel10x学習用のシンプルなCMS
+Laravel10xとDDD(ドメイン駆動設計)学習用のシンプルなCMS
 
 # 仕様
 ## 機能一覧
@@ -16,6 +16,7 @@ Laravel10x学習用のシンプルなCMS
         - タグ表示
         - 本文表示
             - MarkDown解析表示
+            - 画像埋め込みコード解析
 - 管理者
     - ベーシック認証
     - ログイン
@@ -28,6 +29,7 @@ Laravel10x学習用のシンプルなCMS
             - タグ設定
             - 本文作成
                 - MarkDownで登録
+                - 画像埋め込みコード登録
             - プレビュー
             - 下書き保存
         - 記事編集
@@ -35,8 +37,11 @@ Laravel10x学習用のシンプルなCMS
             - タイトル作成
             - タグ設定
             - 本文作成
-                - 画像埋め込みコード変換
+                - MarkDownで登録
+                - 画像埋め込みコード登録
             - プレビュー
+                - MarkDown解析表示
+                - 画像埋め込みコード解析
             - 記事の非公開
             - 記事の削除
     - 管理画像一覧
@@ -51,7 +56,7 @@ graph LR
     subgraph user [ユーザー]
         ヘッダー--"/"-->記事一覧
         /-->記事一覧
-        記事一覧--"/articles/show/:id"-->記事詳細
+        記事一覧--"/articles/:id"-->記事詳細
     end
     
     subgraph admin [管理者]
@@ -77,17 +82,18 @@ graph LR
 ```mermaid
 erDiagram
 
-    articles }|--|| article_statuses: "article_statuses_id"
-    articles }|--|| pictures: "pictures_id"
-    article_tags }o--|| articles: "articles_id"
-    article_tags }|--|| tags: "tags_id"
+    articles }|--|| article_statuses: "article_status_id"
+    articles }|--|| pictures: "picture_id"
+    article_tags }o--|| articles: "article_id"
+    article_tags }|--|| tags: "tag_id"
 
     articles {
         bigint id PK
         string title "記事タイトル"
-        string pictures_id "サムネイル画像ID"
+        string picture_id "サムネイル画像ID"
         text body "記事本文"
-        string article_statuses_id "記事ステータス"
+        string article_status_id "記事ステータス"
+        datetime published_at "記事公開日"
         datetime created_at
         timestamp updated_at
     }
@@ -101,8 +107,8 @@ erDiagram
     }
 
     article_tags {
-        bigint articles_id "記事ID"
-        string tags_id "タグID"
+        bigint article_id "記事ID"
+        string tag_id "タグID"
         datetime created_at
         timestamp updated_at
     }
@@ -125,24 +131,35 @@ erDiagram
 ```
 
 # 開発環境構築
-## コンテナを立ち上げる
-    docker-compose up -d
-
-## ライブラリインストール
-    docker exec -it simple_cms_app composer install
-
-## データベースを作成
-    docker exec -it simple_cms_db mysql -uroot -ppass -e "create database simple_cms;"
-
-## テーブルを作成
-    docker exec -it simple_cms_app php artisan migrate
-
-## 開発用データ投入
-    docker exec -it simple_cms_app php artisan db:seed --class=DevSeeder
-
-## リンクを作成
-    docker exec -it simple_cms_app php artisan storage:link
-
+1. コンテナを立ち上げる  
+`docker-compose up -d`
+2. ライブラリインストール  
+`docker exec -it simple_cms_app composer install`
+3. データベースを作成  
+`docker exec -it simple_cms_db mysql -uroot -ppass -e "create database simple_cms;"`
+4. テーブルを作成  
+`docker exec -it simple_cms_app php artisan migrate`
+5. 開発用データ投入  
+`docker exec -it simple_cms_app php artisan db:seed --class=DevlopSeeder`
+6. リンクを作成  
+`docker exec -it simple_cms_app php artisan storage:link`
+7. トップページにアクセス  
 http://localhost:8080  
 
-# テスト実行手順
+# テスト
+## コード静的解析実行(Larastan)
+`docker exec -it simple_cms_app ./vendor/bin/phpstan analyse --memory-limit=1G`
+
+## テスト実行
+1. データベースをクリア  
+`docker exec -it simple_cms_app php artisan migrate:fresh`
+2. PHPUnit実行  
+`docker exec -it simple_cms_app php artisan test`
+
+## カバレッジ率を測定
+1. Xdebugのコンテナを起動  
+`docker-compose -f ./docker-compose.xdebug.yml up -d`
+2. php.iniのxdebugの設定を変更  
+`docker exec -it simple_cms_app sed -i 's/xdebug.mode=debug/xdebug.mode=coverage/g' /etc/php81/php.ini`
+3. PHPUnitを実行  
+`docker exec -it simple_cms_app php artisan test --coverage`
