@@ -27,9 +27,10 @@ Route::group(['middleware' => 'basicauth'], function() {
             Route::prefix('articles')->group(function() {
                 Route::get('/', [App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('admin.articles.index');
                 Route::get('create', [App\Http\Controllers\Admin\ArticleController::class, 'create'])->name('admin.articles.create');
-                Route::post('create/preview', [App\Http\Controllers\Admin\ArticleController::class, 'createPreview'])->name('admin.articles.create.preview');
+                Route::post('preview/{articleId?}/{pictureId?}', [App\Http\Controllers\Admin\ArticleController::class, 'preview'])->name('admin.articles.preview');
                 Route::post('store/{storeType}', [App\Http\Controllers\Admin\ArticleController::class, 'store'])->name('admin.articles.store');
                 Route::get('{articleId}/pictures/create', [App\Http\Controllers\Admin\ArticleController::class, 'pictureCreate'])->name('admin.articles.pictures.create');
+                Route::post('{articleId}/pictures/store/{storeType}', [App\Http\Controllers\Admin\ArticleController::class, 'pictureStore'])->name('admin.articles.pictures.store');
             });
         });
     });

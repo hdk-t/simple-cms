@@ -4,10 +4,6 @@ declare(strict_types = 1);
 
 namespace App\UseCases\Admin\Article\Entities;
 
-use App\Models\Picture;
-use App\Services\MarkdownParseService;
-use Illuminate\Support\Collection;
-use DateTimeImmutable;
 use JsonSerializable;
 
 class TagEntity implements JsonSerializable

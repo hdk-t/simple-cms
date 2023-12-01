@@ -16,7 +16,7 @@ class IndexAction
     public function __invoke(): array
     {
         $articles = Article::whereNot('article_status_id', ArticleStatus::DELETED)
-                           ->orderBy('created_at', 'desc')
+                           ->orderBy('updated_at', 'desc')
                            ->get();
 
         foreach ($articles as $article)

@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 class StoreAction
 {
-    public function __invoke(ArticleFormRequest $artilceForm): Article|null
+    public function __invoke(ArticleFormRequest $artilceForm): int|null
     {
         try
         {

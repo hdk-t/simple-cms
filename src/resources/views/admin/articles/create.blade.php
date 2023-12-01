@@ -1,5 +1,6 @@
 @extends('admin.header')
 @section('content')
+    <h1>STEP1</h1>
     <form method="post">
         @csrf
         <div>
@@ -30,7 +31,7 @@
             <div>
         </div>
         <div>
-            <button type="submit" formaction="{{ route('admin.articles.create.preview') }}" formtarget="_blank">プレビューを見る</button>
+            <button type="submit" formaction="{{ route('admin.articles.preview') }}" formtarget="_blank">プレビューを見る</button>
             <button type="submit" formaction="{{ route('admin.articles.store', ['storeType' => 'draft']) }}">下書き保存する</button>
             <button type="submit" formaction="{{ route('admin.articles.store', ['storeType' => 'next']) }}">次に進む</button>
         </div>
