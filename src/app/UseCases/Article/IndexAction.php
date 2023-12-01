@@ -19,7 +19,6 @@ class IndexAction
                            ->orderBy('created_at', 'desc')
                            ->get();
                           
-        $articleEntities = [];
         foreach ($articles as $article)
         {
             $articleEntity = new ArticleEntity(

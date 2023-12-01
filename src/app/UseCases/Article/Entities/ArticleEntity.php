@@ -25,30 +25,30 @@ class ArticleEntity implements JsonSerializable
     /**
      * @param array<string> $tags
      */
-    public function __construct(int $articleId,
+    public function __construct(int    $articleId,
                                 string $pictureUrl,
                                 string $title,                            
-                                array $tags,
+                                array  $tags,
                                 string $publishedAt,
                                 string $body = '',)
     {
-        $this->articleId = $articleId;
-        $this->pictureUrl = $pictureUrl;
-        $this->title = $title;
-        $this->tags = $tags;
+        $this->articleId   = $articleId;
+        $this->pictureUrl  = $pictureUrl;
+        $this->title       = $title;
+        $this->tags        = $tags;
         $this->publishedAt = $publishedAt;
-        $this->body = $body;
+        $this->body        = $body;
     }
 
     public function jsonSerialize(): mixed
     {
         return [
-            'id'            => $this->articleId,
-            'pictureUrl'    => $this->pictureUrl,
-            'title'         => $this->title,
-            'body'          => $this->body,
-            'tags'          => $this->tags,
-            'publishedAt'   => $this->publishedAt,
+            'id'          => $this->articleId,
+            'pictureUrl'  => $this->pictureUrl,
+            'title'       => $this->title,
+            'body'        => $this->body,
+            'tags'        => $this->tags,
+            'publishedAt' => $this->publishedAt,
         ];
     }
 

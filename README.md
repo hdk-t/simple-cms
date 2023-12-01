@@ -1,7 +1,8 @@
 # simple-cms
-Laravel10xとDDD(ドメイン駆動設計)学習用のシンプルなCMS
+Laravel10xとDDD(ドメイン駆動設計)学習用のシンプルなCMS  
+(WordPressの完全下位互換)  
 
-# 仕様
+# 設計/仕様
 ## 機能一覧
 - ユーザー 
     - 記事一覧表示
@@ -23,7 +24,7 @@ Laravel10xとDDD(ドメイン駆動設計)学習用のシンプルなCMS
     - ログアウト
     - 管理記事一覧
         - 記事ジャンプ
-        - 記事作成
+        - 記事新規作成
             - サムネイル画像設定
             - タイトル作成
             - タグ設定
@@ -49,6 +50,9 @@ Laravel10xとDDD(ドメイン駆動設計)学習用のシンプルなCMS
         - 画像アップロード
         - 画像の削除
 
+## WBS(タスクリスト)
+./WBS.mdをご参照ください。  
+
 ## 画面遷移図
 ```mermaid
 graph LR
@@ -64,13 +68,16 @@ graph LR
         管理者ヘッダー--"/admin/articles"-->管理記事一覧
         管理者ヘッダー--"/admin/pictures"-->管理画像一覧
         管理者ヘッダー--ログアウト-->パスワード認証画面
-        管理記事一覧--"/admin/articles/create"-->記事作成
-        記事作成--"/admin/articles/:id/pictures"-->サムネイル画像設定
+        管理記事一覧--"/admin/articles/create"-->記事新規作成
+        記事新規作成--"/admin/articles/:id/pictures"-->サムネイル画像設定
         管理記事一覧--"/admin/articles/edit/:id"-->記事編集
         記事編集--"/admin/articles/:id/pictures"-->サムネイル画像設定
         サムネイル画像設定-->管理記事一覧
         記事編集--"/admin/articles/delete/:id"-->記事削除確認
         記事削除確認-->管理記事一覧
+        管理記事一覧--"/admin/articles/:id/preview"-->記事プレビュー
+        記事新規作成--/admin/articles/preview-->新規作成記事プレビュー
+        記事編集--"/admin/articles/:id/preview"-->記事プレビュー
         管理画像一覧--"/admin/pictures/create"-->画像アップロード
         画像アップロード-->管理画像一覧
         管理画像一覧--"/admin/pictures/delete/:id"-->画像削除確認
@@ -94,7 +101,7 @@ erDiagram
         text body "記事本文"
         string article_status_id "記事ステータス"
         datetime published_at "記事公開日"
-        datetime created_at
+        timestamp created_at
         timestamp updated_at
     }
 
@@ -102,14 +109,14 @@ erDiagram
         bigint id PK
         string name "ステータス名"
         string sentence "ステータス説明"
-        datetime created_at
+        timestamp created_at
         timestamp updated_at
     }
 
     article_tags {
         bigint article_id "記事ID"
         string tag_id "タグID"
-        datetime created_at
+        timestamp created_at
         timestamp updated_at
     }
 
@@ -117,7 +124,7 @@ erDiagram
         bigint id PK
         string name "タグ名"
         string sentence "タグ説明"
-        datetime created_at
+        timestamp created_at
         timestamp updated_at
     }
 
@@ -125,10 +132,34 @@ erDiagram
         bigint id PK
         string path "画像パス"
         boolean deleted_at
-        datetime created_at
+        timestamp created_at
         timestamp updated_at
     }
 ```
+
+## アーキテクチャ
+DDD x なんちゃってクリーンアーキテクチャ  
+なんちゃってクリーンアーキテクチャ: [5年間 Laravel を使って辿り着いた，全然頑張らない「なんちゃってクリーンアーキテクチャ」という落としどころ](https://zenn.dev/mpyw/articles/ce7d09eb6d8117)  
+
+## コーディングルール
+- Controller、UseCases、Services配下のクラスでは`declare(strict_types = 1);`を使用する。  
+
+### UseCaseについて
+- UseCase配下にはビジネスロジックをガッツリ記述する。
+- Eloquentをガンガン使用してOK。
+- テストは機能テストで担保する。
+
+### Entityについて
+- 同じテーブルであったとしても、ドメインごとにEntityを分割する。
+    - (例) articlesテーブルはユーザー用と管理者用で、それぞれ別クラスのEntityを作成する。  
+- Entityには`JsonSerializable`を継承させてあげる。
+    - APIモードへの移行が容易になる。
+
+### Serviceクラスについて
+- Serviceクラスには共通で使用するロジック等を記述する。
+- 永続化データを扱わない純粋なロジックを記述する。
+- 基本的にServiceクラス内ではEloquentの使用は禁止(ただし、引数の型としてModelsのクラスの受け取りはOK)。
+- PHPUnitでテストコードを記述すること。
 
 # 開発環境構築
 1. コンテナを立ち上げる  
@@ -156,7 +187,7 @@ http://localhost:8080
 2. PHPUnit実行  
 `docker exec -it simple_cms_app php artisan test`
 
-## カバレッジ率を測定
+## コードのカバレッジ率を測定
 1. Xdebugのコンテナを起動  
 `docker-compose -f ./docker-compose.xdebug.yml up -d`
 2. php.iniのxdebugの設定を変更  

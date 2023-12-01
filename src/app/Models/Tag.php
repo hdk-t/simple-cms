@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
     use HasFactory;
+
+    public static function tagIdsToNames(array $tagIds): array
+    {
+        return self::whereIn('id', $tagIds)->pluck('name')->toArray();
+    }
 }

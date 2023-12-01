@@ -8,7 +8,9 @@
     </head>
     <body>
         <header>
-            <h1><a href="{{ route('articles.index') }}">{{ config('app.name', 'Laravel') }}</a></h1>
+            <h1>
+                <a href="{{ route('articles.index') }}">{{ config('app.name', 'Laravel') }}</a>
+            </h1>
         </header>
         <main>
             @yield('content')

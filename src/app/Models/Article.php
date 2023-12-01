@@ -39,4 +39,20 @@ class Article extends Model
     {
         return  $this->tags()->pluck('name')->toArray();
     }
+
+    /**
+     * @return array<string>
+     */
+    public function getArticleStatusNameAttribute(): string
+    {
+        return is_null( $this->articleStatus()->first()) ? '' : $this->articleStatus()->first()->name;
+    }
+
+    protected $casts = [
+        'published_at' => 'string:Y-m-d H:m:s',
+        'created_at'   => 'string:Y-m-d H:m:s',
+        'updated_at'   => 'string:Y-m-d H:m:s',
+    ];
+
+    protected $fillable = ['id', 'title', 'picture_id', 'body', 'article_status_id', 'published_at', 'created_at', 'updated_at'];
 }

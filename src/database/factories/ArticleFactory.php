@@ -27,14 +27,14 @@ class ArticleFactory extends Factory
                 fake()->realText()."  \n".
                 '[img] '.fake()->numberBetween(1, 10).' [/img]';
         
-        $datetime = fake()->dateTimeBetween('+1day', '+1year');
+        $datetime = fake()->dateTimeBetween('-1year', '-1day');
         $createdAt = $datetime->format('Y-m-d H:i:s');
         $publishDate = $datetime->modify('+5hour')->format('Y-m-d H:i:s');
         $updatedAt = $datetime->modify('+5hour')->format('Y-m-d H:i:s');
 
         $articleStatusIds = ArticleStatus::all()->pluck('id')->toArray();
-        $articleStatus = array_rand($articleStatusIds, 1);
-        if($articleStatus != ArticleStatus::PUBLISH)
+        $articleStatusId = $articleStatusIds[array_rand($articleStatusIds, 1)];
+        if($articleStatusId != ArticleStatus::PUBLISH)
         {
             $publishDate = null;   
         }
@@ -43,7 +43,7 @@ class ArticleFactory extends Factory
             'picture_id'        => fake()->numberBetween(1, 10),
             'body'              => $body,
             'published_at'      => $publishDate,
-            'article_status_id' => $articleStatus,
+            'article_status_id' => $articleStatusId,
             'created_at'        => $createdAt,
             'updated_at'        => $updatedAt,
         ];

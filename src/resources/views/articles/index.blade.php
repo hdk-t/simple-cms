@@ -6,7 +6,7 @@
                 <img src="{{ $article->pictureUrl() }}" style="width: 200px; height: 200px; object-fit: cover;">
             </div>
             <div>
-                <a href="{{ route('articles.show', [ 'articleId' => $article->articleId() ]) }}">{{ $article->title() }}</a>
+                <a href="{{ route('articles.show', ['articleId' => $article->articleId()]) }}">{{ $article->title() }}</a>
             </div>
             <div>
                 {{ $article->publishedAt() }}
